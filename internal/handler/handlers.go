@@ -24,8 +24,8 @@ func Shortner(storage *service.URLShortnerStorage) http.HandlerFunc {
 
 			fullUrl := storage.Get(parts[0])
 
+			w.Header().Set("Location", fullUrl)
 			w.WriteHeader(http.StatusTemporaryRedirect)
-			w.Write([]byte(fullUrl))
 
 			return
 
@@ -52,7 +52,8 @@ func Shortner(storage *service.URLShortnerStorage) http.HandlerFunc {
 			storage.Show()
 			//Remember
 			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusOK)
+
+			w.WriteHeader(http.StatusCreated)
 			w.Write([]byte(shortUrl))
 
 			return
