@@ -17,7 +17,7 @@ func (s *URLShortnerStorage) Get(shortURL string) (string, error) {
 		return val, nil
 	}
 
-	return "", fmt.Errorf("Object %s not found ", shortURL)
+	return "", fmt.Errorf("object %s not found ", shortURL)
 
 }
 
@@ -31,7 +31,7 @@ func (s *URLShortnerStorage) Set(url string) (string, error) {
 		if val == url {
 			return shortURL, nil
 		}
-		return "", fmt.Errorf("Hash is busy")
+		return "", fmt.Errorf("hash is busy")
 	} else {
 		s.Storage[shortURL] = url
 		return shortURL, nil
