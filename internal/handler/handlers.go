@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/service"
 )
@@ -81,4 +83,13 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http
 
 	})
 
+}
+
+func Router(storage *service.URLShortnerStorage, config *config.Config) chi.Router {
+	r := chi.NewRouter()
+
+	r.Post(`/`, ShortURL(storage, config))
+	r.Get(`/{id}`, GetFullURL(storage, config))
+
+	return r
 }

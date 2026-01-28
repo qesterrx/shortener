@@ -19,10 +19,5 @@ func run() error {
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
 	config := &config.Config{HOST: "localhost:8080"}
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc(`/`, handler.ShortURL(storage, config))
-	mux.HandleFunc(`/{id}`, handler.GetFullURL(storage, config))
-
-	return http.ListenAndServe(config.HOST, mux)
+	return http.ListenAndServe(config.HOST, handler.Router(storage, config))
 }
