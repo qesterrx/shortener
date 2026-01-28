@@ -15,12 +15,12 @@ func main() {
 
 func run() error {
 
-	storage := &service.URLShortnerStorage{
-		Storage: make(map[string]string)}
+	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc(`/`, handler.Shortner(storage))
+	mux.HandleFunc(`/`, handler.ShortURL(storage))
+	mux.HandleFunc(`/{id}`, handler.GetFullURL(storage))
 
 	return http.ListenAndServe(`:8080`, mux)
 }
