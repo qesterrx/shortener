@@ -10,6 +10,13 @@ type URLShortnerStorage struct {
 	Storage map[string]string
 }
 
+func GetHash(text string) string {
+	hash := sha256.Sum256([]byte(text))
+	hex := hex.EncodeToString(hash[:])
+
+	return hex[:8]
+}
+
 func (s *URLShortnerStorage) Get(shortURL string) (string, error) {
 	val, exists := s.Storage[shortURL]
 
@@ -23,9 +30,7 @@ func (s *URLShortnerStorage) Get(shortURL string) (string, error) {
 
 func (s *URLShortnerStorage) Set(url string) (string, error) {
 
-	hash := sha256.Sum256([]byte(url))
-	hex := hex.EncodeToString(hash[:])
-	shortURL := hex[:8]
+	shortURL := GetHash(url)
 
 	if val, exists := s.Storage[shortURL]; exists {
 		if val == url {

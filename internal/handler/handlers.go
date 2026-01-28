@@ -5,10 +5,11 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/service"
 )
 
-func ShortURL(storage *service.URLShortnerStorage) http.HandlerFunc {
+func ShortURL(storage *service.URLShortnerStorage, config *config.Config) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -39,18 +40,18 @@ func ShortURL(storage *service.URLShortnerStorage) http.HandlerFunc {
 			return
 		}
 
-		storage.Show()
+		//storage.Show() //---Отладка
 
 		w.Header().Set("Content-Type", "text/plain")
 
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", shortURL)))
+		w.Write([]byte(fmt.Sprintf("%s%s", config.HOST, shortURL)))
 
 	})
 
 }
 
-func GetFullURL(storage *service.URLShortnerStorage) http.HandlerFunc {
+func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

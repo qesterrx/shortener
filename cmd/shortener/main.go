@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/handler"
 	"github.com/qesterrx/shortener/internal/service"
 )
@@ -16,11 +17,12 @@ func main() {
 func run() error {
 
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+	config := &config.Config{HOST: "http://localhost:8080/"}
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc(`/`, handler.ShortURL(storage))
-	mux.HandleFunc(`/{id}`, handler.GetFullURL(storage))
+	mux.HandleFunc(`/`, handler.ShortURL(storage, config))
+	mux.HandleFunc(`/{id}`, handler.GetFullURL(storage, config))
 
-	return http.ListenAndServe(`:8080`, mux)
+	return http.ListenAndServe(config.HOST, mux)
 }
