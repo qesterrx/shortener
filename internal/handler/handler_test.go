@@ -42,7 +42,7 @@ func TestShortURL(t *testing.T) {
 			want: want{
 				statusCode:  http.StatusCreated,
 				contentType: "text/plain",
-				body:        service.GetHash(""),
+				body:        fmt.Sprintf("http://%s/%s", config.HOST, service.GetHash("")),
 			},
 		},
 		{
@@ -52,7 +52,7 @@ func TestShortURL(t *testing.T) {
 			want: want{
 				statusCode:  http.StatusCreated,
 				contentType: "text/plain",
-				body:        service.GetHash("https://habr.com/ru/articles/550352/"),
+				body:        fmt.Sprintf("http://%s/%s", config.HOST, service.GetHash("https://habr.com/ru/articles/550352/")),
 			},
 		},
 		{
