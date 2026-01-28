@@ -45,7 +45,7 @@ func ShortURL(storage *service.URLShortnerStorage, config *config.Config) http.H
 		w.Header().Set("Content-Type", "text/plain")
 
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(fmt.Sprintf("%s%s", config.HOST, shortURL)))
+		w.Write([]byte(fmt.Sprintf("http://%s/%s", config.HOST, shortURL)))
 
 	})
 
@@ -61,6 +61,7 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http
 		}
 
 		shortURL := r.PathValue("id")
+		//fmt.Printf("shortURL=%s\n", shortURL)
 
 		if shortURL == "" {
 			w.WriteHeader(http.StatusBadRequest)
@@ -68,6 +69,7 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http
 		}
 
 		fullURL, err := storage.Get(shortURL)
+		//fmt.Printf("fullURL=%s\n", fullURL)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

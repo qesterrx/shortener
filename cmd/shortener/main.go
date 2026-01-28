@@ -17,7 +17,7 @@ func main() {
 func run() error {
 
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
-	config := &config.Config{HOST: "http://localhost:8080/"}
+	config := &config.Config{HOST: "localhost:8080"}
 
 	mux := http.NewServeMux()
 
