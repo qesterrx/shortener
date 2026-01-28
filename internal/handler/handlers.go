@@ -1,67 +1,81 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"net/http"
-	"strings"
 
 	"github.com/qesterrx/shortener/internal/service"
 )
 
-func Shortner(storage *service.URLShortnerStorage) http.HandlerFunc {
+func ShortURL(storage *service.URLShortnerStorage) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		if r.Method == http.MethodGet {
-
-			path := strings.Trim(r.URL.Path, `/`)
-			parts := strings.Split(path, `/`)
-
-			if len(parts) != 1 {
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-
-			fullUrl := storage.Get(parts[0])
-
-			w.Header().Set("Location", fullUrl)
-			w.WriteHeader(http.StatusTemporaryRedirect)
-
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusBadRequest)
 			return
-
 		}
 
-		if r.Method == http.MethodPost {
-
-			if r.Body == nil {
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-
-			defer r.Body.Close()
-
-			body, err := io.ReadAll(r.Body) //body is []byte
-
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
-
-			shortUrl := "http://localhost:8080/" + storage.Set(string(body))
-
-			storage.Show()
-			//Remember
-			w.Header().Set("Content-Type", "text/plain")
-
-			w.WriteHeader(http.StatusCreated)
-			w.Write([]byte(shortUrl))
-
+		if r.Body == nil {
+			w.WriteHeader(http.StatusBadRequest)
 			return
-
 		}
 
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		defer r.Body.Close()
+
+		body, err := io.ReadAll(r.Body) //body is []byte
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		//Remember new value
+		shortURL, err := storage.Set(string(body))
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		storage.Show()
+
+		w.Header().Set("Content-Type", "text/plain")
+
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", shortURL)))
+
+	})
+
+}
+
+func GetFullURL(storage *service.URLShortnerStorage) http.HandlerFunc {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		shortURL := r.PathValue("id")
+
+		if shortURL == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		fullURL, err := storage.Get(shortURL)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Location", fullURL)
+		w.WriteHeader(http.StatusTemporaryRedirect)
+
 	})
 
 }
