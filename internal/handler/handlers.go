@@ -11,7 +11,7 @@ import (
 	"github.com/qesterrx/shortener/internal/service"
 )
 
-func ShortURL(storage *service.URLShortnerStorage, config *config.Config) http.HandlerFunc {
+func ShortURL(storage *service.URLShortnerStorage, config *config.Configuration) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -47,13 +47,13 @@ func ShortURL(storage *service.URLShortnerStorage, config *config.Config) http.H
 		w.Header().Set("Content-Type", "text/plain")
 
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(fmt.Sprintf("http://%s/%s", config.HOST, shortURL)))
+		w.Write([]byte(fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), shortURL)))
 
 	})
 
 }
 
-func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http.HandlerFunc {
+func GetFullURL(storage *service.URLShortnerStorage, config *config.Configuration) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -85,7 +85,7 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Config) http
 
 }
 
-func Router(storage *service.URLShortnerStorage, config *config.Config) chi.Router {
+func Router(storage *service.URLShortnerStorage, config *config.Configuration) chi.Router {
 	r := chi.NewRouter()
 
 	r.Post(`/`, ShortURL(storage, config))

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/qesterrx/shortener/internal/config"
@@ -16,8 +17,12 @@ func main() {
 
 func run() error {
 
-	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
-	config := &config.Config{HOST: "localhost:8080"}
+	config := config.ParseParams()
 
-	return http.ListenAndServe(config.HOST, handler.Router(storage, config))
+	fmt.Println("ServerHost=", config.ServerHost.String())
+	fmt.Println("ServerRedirect=", config.ServerRedirect.String())
+
+	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+
+	return http.ListenAndServe(config.ServerHost.String(), handler.Router(storage, config))
 }

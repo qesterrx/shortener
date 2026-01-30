@@ -15,7 +15,10 @@ import (
 )
 
 func TestShortURL(t *testing.T) {
-	config := &config.Config{HOST: ""}
+	config := &config.Configuration{
+		ServerHost:     config.NetAddress{Host: "localhost", Port: 8080},
+		ServerRedirect: config.NetAddress{Host: "localhost", Port: 8080},
+	}
 
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
 	duplicateString := "hash for this string was added to storage"
@@ -42,7 +45,7 @@ func TestShortURL(t *testing.T) {
 			want: want{
 				statusCode:  http.StatusCreated,
 				contentType: "text/plain",
-				body:        fmt.Sprintf("http://%s/%s", config.HOST, service.GetHash("")),
+				body:        fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), service.GetHash("")),
 			},
 		},
 		{
@@ -52,7 +55,7 @@ func TestShortURL(t *testing.T) {
 			want: want{
 				statusCode:  http.StatusCreated,
 				contentType: "text/plain",
-				body:        fmt.Sprintf("http://%s/%s", config.HOST, service.GetHash("https://habr.com/ru/articles/550352/")),
+				body:        fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), service.GetHash("https://habr.com/ru/articles/550352/")),
 			},
 		},
 		{
@@ -101,13 +104,16 @@ func TestShortURL(t *testing.T) {
 
 func TestGetFullURL(t *testing.T) {
 
-	config := &config.Config{HOST: ""}
+	config := &config.Configuration{
+		ServerHost:     config.NetAddress{Host: "localhost", Port: 8080},
+		ServerRedirect: config.NetAddress{Host: "localhost", Port: 8080},
+	}
 
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
 	savedValue := "test"
 	storage.Storage[service.GetHash(savedValue)] = savedValue
 
-	storage.Show()
+	//storage.Show()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", GetFullURL(storage, config))
@@ -145,7 +151,7 @@ func TestGetFullURL(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			fmt.Println(test.url)
+			//fmt.Println(test.url)
 			r := httptest.NewRequest(test.method, test.url, nil)
 			w := httptest.NewRecorder()
 
