@@ -22,6 +22,11 @@ func (t *NetAddress) String() string {
 }
 
 func (t *NetAddress) Set(val string) error {
+
+	//Тестом на вход подаются почему то http://localhost:8080
+	val = strings.ReplaceAll(val, "http://", "")
+	val = strings.ReplaceAll(val, "https://", "")
+
 	p := strings.Split(val, ":")
 	if len(p) != 2 {
 		return errors.New("params must have format host:port")
