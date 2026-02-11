@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"flag"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -52,6 +53,14 @@ func ParseParams() *Configuration {
 	flag.Var(&cfg.ServerRedirect, "b", "Host for redirect by short url")
 
 	flag.Parse()
+
+	if envServerHost := os.Getenv("SERVER_ADDRESS"); envServerHost != "" {
+		cfg.ServerHost.Set(envServerHost)
+	}
+
+	if envServerRedirect := os.Getenv("BASE_URL"); envServerRedirect != "" {
+		cfg.ServerRedirect.Set(envServerRedirect)
+	}
 
 	return &cfg
 }
