@@ -6,6 +6,7 @@ import (
 
 	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/handler"
+	"github.com/qesterrx/shortener/internal/logger"
 	"github.com/qesterrx/shortener/internal/service"
 )
 
@@ -17,6 +18,7 @@ func main() {
 
 func run() error {
 
+	logger.InitLogger()
 	config := config.ParseParams()
 
 	fmt.Println("ServerHost=", config.ServerHost.String())

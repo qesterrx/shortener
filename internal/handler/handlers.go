@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/qesterrx/shortener/internal/config"
+	"github.com/qesterrx/shortener/internal/logger"
 	"github.com/qesterrx/shortener/internal/service"
 )
 
@@ -88,8 +89,8 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Configuratio
 func Router(storage *service.URLShortnerStorage, config *config.Configuration) chi.Router {
 	r := chi.NewRouter()
 
-	r.Post(`/`, ShortURL(storage, config))
-	r.Get(`/{id}`, GetFullURL(storage, config))
+	r.Post(`/`, logger.HandlerLogger(ShortURL(storage, config)))
+	r.Get(`/{id}`, logger.HandlerLogger(GetFullURL(storage, config)))
 
 	return r
 }
