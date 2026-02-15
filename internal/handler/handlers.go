@@ -104,7 +104,7 @@ func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration
 			return
 		}
 
-		short, err := storage.Set(string(req.Url))
+		short, err := storage.Set(string(req.URL))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
