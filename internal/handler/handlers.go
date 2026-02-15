@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/logger"
+	"github.com/qesterrx/shortener/internal/model"
 	"github.com/qesterrx/shortener/internal/service"
 )
 
@@ -86,9 +88,49 @@ func GetFullURL(storage *service.URLShortnerStorage, config *config.Configuratio
 
 }
 
+func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost ||
+			r.Header.Get("Content-Type") != "application/json" ||
+			r.ContentLength == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		var req model.ShortenUrlReq
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		short, err := storage.Set(string(req.Url))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		res := model.ShortenUrlRes{
+			Goto: fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), short),
+		}
+
+		body, err := json.Marshal(&res)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		w.Write(body)
+	}
+}
+
 func Router(storage *service.URLShortnerStorage, config *config.Configuration) chi.Router {
 	r := chi.NewRouter()
 
+	r.Post(`/api/shorten`, logger.HandlerLogger(ShortJSON(storage, config)))
 	r.Post(`/`, logger.HandlerLogger(ShortURL(storage, config)))
 	r.Get(`/{id}`, logger.HandlerLogger(GetFullURL(storage, config)))
 
