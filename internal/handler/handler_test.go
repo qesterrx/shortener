@@ -111,9 +111,9 @@ func TestShortJSON(t *testing.T) {
 	}
 
 	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
-	req := model.ShortenUrlReq{Url: "https://habr.com/ru/articles/550352/"}
+	req := model.ShortenURLReq{Url: "https://habr.com/ru/articles/550352/"}
 	reqJSON, _ := json.Marshal(&req)
-	res := model.ShortenUrlRes{Goto: fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), service.GetHash("https://habr.com/ru/articles/550352/"))}
+	res := model.ShortenURLRes{Goto: fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), service.GetHash("https://habr.com/ru/articles/550352/"))}
 	resJSON, _ := json.Marshal(&res)
 
 	type want struct {

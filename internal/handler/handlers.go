@@ -97,7 +97,7 @@ func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration
 			return
 		}
 
-		var req model.ShortenUrlReq
+		var req model.ShortenURLReq
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -110,7 +110,7 @@ func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration
 			return
 		}
 
-		res := model.ShortenUrlRes{
+		res := model.ShortenURLRes{
 			Goto: fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), short),
 		}
 

@@ -1,9 +1,9 @@
 package model
 
-type ShortenUrlReq struct {
+type ShortenURLReq struct {
 	Url string `json:"url"`
 }
 
-type ShortenUrlRes struct {
+type ShortenURLRes struct {
 	Goto string `json:"result"`
 }
