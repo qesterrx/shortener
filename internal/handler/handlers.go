@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/qesterrx/shortener/internal/compression"
 	"github.com/qesterrx/shortener/internal/config"
 	"github.com/qesterrx/shortener/internal/logger"
 	"github.com/qesterrx/shortener/internal/model"
@@ -130,9 +131,9 @@ func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration
 func Router(storage *service.URLShortnerStorage, config *config.Configuration) chi.Router {
 	r := chi.NewRouter()
 
-	r.Post(`/api/shorten`, logger.HandlerLogger(ShortJSON(storage, config)))
-	r.Post(`/`, logger.HandlerLogger(ShortURL(storage, config)))
-	r.Get(`/{id}`, logger.HandlerLogger(GetFullURL(storage, config)))
+	r.Post(`/api/shorten`, compression.HandlerGzipCompress(logger.HandlerLogger(ShortJSON(storage, config))))
+	r.Post(`/`, compression.HandlerGzipCompress(logger.HandlerLogger(ShortURL(storage, config))))
+	r.Get(`/{id}`, compression.HandlerGzipCompress(logger.HandlerLogger(GetFullURL(storage, config))))
 
 	return r
 }
