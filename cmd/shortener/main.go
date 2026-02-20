@@ -23,8 +23,13 @@ func run() error {
 
 	fmt.Println("ServerHost=", config.ServerHost.String())
 	fmt.Println("ServerRedirect=", config.ServerRedirect.String())
+	fmt.Println("FileStorage=", config.FileStorage)
 
-	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+	storage, err := service.NewURLShortnerStorage(config.FileStorage)
+	if err != nil {
+		panic(err)
+	}
+	defer storage.Close()
 
 	return http.ListenAndServe(config.ServerHost.String(), handler.Router(storage, config))
 }

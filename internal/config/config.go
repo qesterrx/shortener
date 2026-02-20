@@ -11,6 +11,7 @@ import (
 type Configuration struct {
 	ServerHost     NetAddress
 	ServerRedirect NetAddress
+	FileStorage    string
 }
 
 type NetAddress struct {
@@ -52,6 +53,8 @@ func ParseParams() *Configuration {
 	cfg.ServerRedirect = NetAddress{Host: "localhost", Port: 8080}
 	flag.Var(&cfg.ServerRedirect, "b", "Host for redirect by short url")
 
+	flag.StringVar(&cfg.FileStorage, "f", "TempFileStorage", "Path to file for storage")
+
 	flag.Parse()
 
 	if envServerHost := os.Getenv("SERVER_ADDRESS"); envServerHost != "" {
@@ -60,6 +63,10 @@ func ParseParams() *Configuration {
 
 	if envServerRedirect := os.Getenv("BASE_URL"); envServerRedirect != "" {
 		cfg.ServerRedirect.Set(envServerRedirect)
+	}
+
+	if envFileStorage := os.Getenv("FILE_STORAGE_PATH"); envFileStorage != "" {
+		cfg.FileStorage = envFileStorage
 	}
 
 	return &cfg

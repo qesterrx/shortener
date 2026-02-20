@@ -22,9 +22,9 @@ func TestShortURL(t *testing.T) {
 		ServerRedirect: config.NetAddress{Host: "localhost", Port: 8080},
 	}
 
-	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+	storage := &service.URLShortnerStorage{Storage: make(map[string]*model.ShortenURL)}
 	duplicateString := "hash for this string was added to storage"
-	storage.Storage[service.GetHash(duplicateString)] = "duplicate string"
+	storage.Storage[service.GetHash(duplicateString)] = &model.ShortenURL{UUID: 1, ShortURL: service.GetHash(duplicateString), OriginalURL: "duplicate string"}
 
 	//storage.Show()
 
@@ -110,7 +110,7 @@ func TestShortJSON(t *testing.T) {
 		ServerRedirect: config.NetAddress{Host: "localhost", Port: 8080},
 	}
 
-	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+	storage := &service.URLShortnerStorage{Storage: make(map[string]*model.ShortenURL)}
 	req := model.ShortenURLReq{URL: "https://habr.com/ru/articles/550352/"}
 	reqJSON, _ := json.Marshal(&req)
 	res := model.ShortenURLRes{Goto: fmt.Sprintf("http://%s/%s", config.ServerRedirect.String(), service.GetHash("https://habr.com/ru/articles/550352/"))}
@@ -204,9 +204,9 @@ func TestGetFullURL(t *testing.T) {
 		ServerRedirect: config.NetAddress{Host: "localhost", Port: 8080},
 	}
 
-	storage := &service.URLShortnerStorage{Storage: make(map[string]string)}
+	storage := &service.URLShortnerStorage{Storage: make(map[string]*model.ShortenURL)}
 	savedValue := "test"
-	storage.Storage[service.GetHash(savedValue)] = savedValue
+	storage.Storage[service.GetHash(savedValue)] = &model.ShortenURL{UUID: 1, ShortURL: service.GetHash(savedValue), OriginalURL: savedValue}
 
 	//storage.Show()
 
