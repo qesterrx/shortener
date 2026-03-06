@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -128,12 +129,23 @@ func ShortJSON(storage *service.URLShortnerStorage, config *config.Configuration
 	}
 }
 
-func Router(storage *service.URLShortnerStorage, config *config.Configuration) chi.Router {
+func pingConnection(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := db.Ping()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func Router(storage *service.URLShortnerStorage, config *config.Configuration, db *sql.DB) chi.Router {
 	r := chi.NewRouter()
 
 	r.Post(`/api/shorten`, compression.HandlerGzipCompress(logger.HandlerLogger(ShortJSON(storage, config))))
 	r.Post(`/`, compression.HandlerGzipCompress(logger.HandlerLogger(ShortURL(storage, config))))
 	r.Get(`/{id}`, compression.HandlerGzipCompress(logger.HandlerLogger(GetFullURL(storage, config))))
+	r.Get(`/ping`, pingConnection(db))
 
 	return r
 }

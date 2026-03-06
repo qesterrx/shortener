@@ -12,6 +12,7 @@ type Configuration struct {
 	ServerHost     NetAddress
 	ServerRedirect NetAddress
 	FileStorage    string
+	DatabaseDSN    string
 }
 
 type NetAddress struct {
@@ -54,6 +55,7 @@ func ParseParams() *Configuration {
 	flag.Var(&cfg.ServerRedirect, "b", "Host for redirect by short url")
 
 	flag.StringVar(&cfg.FileStorage, "f", "TempFileStorage", "Path to file for storage")
+	flag.StringVar(&cfg.DatabaseDSN, "d", "", "Connection string for postgresql")
 
 	flag.Parse()
 
@@ -67,6 +69,10 @@ func ParseParams() *Configuration {
 
 	if envFileStorage := os.Getenv("FILE_STORAGE_PATH"); envFileStorage != "" {
 		cfg.FileStorage = envFileStorage
+	}
+
+	if envDatabaseDSN := os.Getenv("DATABASE_DSN"); envDatabaseDSN != "" {
+		cfg.DatabaseDSN = envDatabaseDSN
 	}
 
 	return &cfg
